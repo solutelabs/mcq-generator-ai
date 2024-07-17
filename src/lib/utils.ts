@@ -30,7 +30,7 @@ export function getNextQuestionDifficulty(currentDifficulty: string, questionAns
   return "easy"
 }
 
-export function getMcq(mcqString: string) {
+export function oneMCQ(mcqString: string) {
   const elements = mcqString.split('||');
   if (elements.length < 4) {
     return null;
@@ -63,4 +63,22 @@ export function getMcq(mcqString: string) {
   })
 
   return mcq;
+}
+
+
+export function multipleMCQs(mcqsString: string): MCQ[] {
+  const elements = mcqsString.split('#');
+  if (elements.length < 2) {
+    return [];
+  }
+  const mcqs: MCQ[] = [];
+
+  for (const element of elements) {
+    const mcq = oneMCQ(element);
+    if (mcq) {
+      mcqs.push(mcq);
+    }
+  }
+
+  return mcqs;
 }

@@ -5,7 +5,7 @@ import Mcq from '@/components/custom/Mcq';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { RefreshCcw } from 'lucide-react';
-import { getMcq, getNextQuestionDifficulty } from '@/lib/utils';
+import { multipleMCQs, getNextQuestionDifficulty } from '@/lib/utils';
 
 export interface MCQ {
   question: string;
@@ -21,6 +21,7 @@ export default function McqIframe() {
 
   const [questionAnswer, setQuestionAnswer] = useState("");
   const [previousDifficulty, setPreviousDifficulty] = useState("easy");
+  const [mcqs, setMcqs] = useState<MCQ[]>([]);
 
 
   const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -30,7 +31,7 @@ export default function McqIframe() {
     append({
       id: Date.now().toString(),
       role: 'user',
-      content: `Generate random one ${nextDifficulty} mcq from provided context`
+      content: `Generate random 5 mcqs related to stock market from provided context.`
     })
     submitMessage();
   }
@@ -57,6 +58,12 @@ export default function McqIframe() {
     if (messages) {
       localStorage.setItem(`messages`, JSON.stringify(messages));
     }
+    const assistantResponse = messages[messages.length - 1];
+    if (!assistantResponse || assistantResponse.role !== 'assistant') return
+    const assistantResponseString = assistantResponse?.content;
+
+    const generatedMcqs: MCQ[] = multipleMCQs(assistantResponseString);
+    setMcqs(generatedMcqs);
   }, [messages])
 
   return (
@@ -67,18 +74,12 @@ export default function McqIframe() {
           localStorage.removeItem(`threadId`);
           localStorage.removeItem(`messages`);
           setMessages([]);
+          setMcqs([]);
         }} />
       </div>
 
-      {messages.map((m: Message) => {
-
-        let mcq: MCQ | null;
-        if (m.role === "assistant") {
-          mcq = getMcq(m.content);
-          return <Mcq mcq={mcq} key={m.id} setQuestionAnswer={setQuestionAnswer} />;
-        }
-
-        return null;
+      {mcqs.map((mcq: MCQ) => {
+        return <Mcq mcq={mcq} key={mcq.question} setQuestionAnswer={setQuestionAnswer} />
       })}
 
       {status === 'in_progress' && <div />}
