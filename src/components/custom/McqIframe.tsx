@@ -1,11 +1,13 @@
 'use client';
 
-import { Message, useAssistant } from 'ai/react';
+import { useAssistant } from 'ai/react';
 import Mcq from '@/components/custom/Mcq';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { RefreshCcw } from 'lucide-react';
-import { multipleMCQs, getNextQuestionDifficulty } from '@/lib/utils';
+import { Loader2, RefreshCcw } from 'lucide-react';
+import { oneMCQ } from '@/lib/utils';
+import SummaryCard from './SummaryCard';
+
 
 export interface MCQ {
   question: string;
@@ -14,25 +16,41 @@ export interface MCQ {
   difficulty: string;
 }
 
+export const totalQuestions = 4;
+
 export default function McqIframe() {
   const { status, messages, submitMessage, threadId, setThreadId, setMessages, append } =
     useAssistant({ api: '/api/get-mcq' });
 
 
   const [questionAnswer, setQuestionAnswer] = useState("");
-  const [previousDifficulty, setPreviousDifficulty] = useState("easy");
   const [mcqs, setMcqs] = useState<MCQ[]>([]);
-
 
   const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const nextDifficulty = getNextQuestionDifficulty(previousDifficulty, questionAnswer);
-    setPreviousDifficulty(nextDifficulty);
-    append({
-      id: Date.now().toString(),
-      role: 'user',
-      content: `Generate random 5 mcqs related to stock market from provided context.`
-    })
+
+    if (messages.length === 0) {
+      append({
+        id: Date.now().toString(),
+        role: 'user',
+        content: `Generate random one mcq related to stock market from provided context.`
+      })
+    }
+    else if (messages.length < totalQuestions) {
+      append({
+        id: Date.now().toString(),
+        role: 'user',
+        content: `Answer to previous question: ${questionAnswer} and generate next mcq linked to previous questions.`
+      })
+    }
+    else {
+      append({
+        id: Date.now().toString(),
+        role: 'user',
+        content: `Answer to previous question: ${questionAnswer} and generate summary and score.`
+      })
+      setMcqs([]);
+    }
     submitMessage();
   }
 
@@ -62,8 +80,13 @@ export default function McqIframe() {
     if (!assistantResponse || assistantResponse.role !== 'assistant') return
     const assistantResponseString = assistantResponse?.content;
 
-    const generatedMcqs: MCQ[] = multipleMCQs(assistantResponseString);
-    setMcqs(generatedMcqs);
+    const mcq = oneMCQ(assistantResponseString)
+    if (mcq && messages.length <= totalQuestions) {
+      setMcqs([mcq]);
+    }
+    else {
+      setMcqs([]);
+    }
   }, [messages])
 
   return (
@@ -82,11 +105,24 @@ export default function McqIframe() {
         return <Mcq mcq={mcq} key={mcq.question} setQuestionAnswer={setQuestionAnswer} />
       })}
 
-      {status === 'in_progress' && <div />}
+      {messages.length <= totalQuestions &&
+        <form onSubmit={onSubmitHandler}>
+          <Button disabled={status !== 'awaiting_message' || (questionAnswer === "" && messages.length > 0)} type='submit' className='m-10'>
+            {status === 'in_progress' && "Generating..."}
+            {messages.length === 0 && "Generate MCQ"}
+            {mcqs.length > 0 && messages.length < totalQuestions && status === 'awaiting_message' && "Next MCQ"}
+            {messages.length >= totalQuestions && "Get your score and summary"}
+          </Button>
+        </form>}
 
-      <form onSubmit={onSubmitHandler}>
-        <Button disabled={status !== 'awaiting_message'} type='submit' className='m-10'>Generate MCQ</Button>
-      </form>
+      {messages.length > totalQuestions && messages[messages.length - 1]?.role === "assistant" &&
+        <SummaryCard summaryAndScore={messages[messages.length - 1]?.content} />
+      }
+      {messages.length > totalQuestions && messages[messages.length - 1]?.role === "user" &&
+        <div className="flex justify-center items-center h-[50vh] w-[46vw]">
+          <Loader2 className='w-20 h-20 text-black bg-white animate-spin' />
+        </div>
+      }
     </div>
   );
 }

@@ -31,11 +31,8 @@ export function getNextQuestionDifficulty(currentDifficulty: string, questionAns
 }
 
 export function oneMCQ(mcqString: string) {
+  if (mcqString === "") return null
   const elements = mcqString.split('||');
-  if (elements.length < 4) {
-    return null;
-  }
-
   const mcq: MCQ = {
     question: "",
     answer: "",
@@ -46,14 +43,16 @@ export function oneMCQ(mcqString: string) {
   elements.map((element) => {
     const parts: string[] = element.split(':');
 
-    if (parts[0].trim() === "question") {
-      mcq.question = parts[1].trim();
+    if (parts[0]?.trim() === "question") {
+      mcq.question = parts[1]?.trim();
     }
-    else if (parts[0].trim() === "answer") {
-      mcq.answer = parts[1].trim();
+    else if (parts[0]?.trim() === "answer") {
+      mcq.answer = parts[1]?.trim();
     }
-    else if (parts[0].trim() === "options") {
-      const options = parts[1].split('&&') as string[];
+    else if (parts[0]?.trim() === "options") {
+      const options = parts[1]?.split('&&') as string[];
+      if (!options || options?.length === 0) return;
+
       for (const option of options) {
         mcq.options.push(option.trim());
       }
@@ -68,9 +67,7 @@ export function oneMCQ(mcqString: string) {
 
 export function multipleMCQs(mcqsString: string): MCQ[] {
   const elements = mcqsString.split('#');
-  if (elements.length < 2) {
-    return [];
-  }
+  if (elements.length === 0) return [];
   const mcqs: MCQ[] = [];
 
   for (const element of elements) {
@@ -81,4 +78,12 @@ export function multipleMCQs(mcqsString: string): MCQ[] {
   }
 
   return mcqs;
+}
+
+export function getSummaryAndScore(summaryAndScore: string): [string, string] {
+  const elements = summaryAndScore.split('&&');
+  const score = elements?.[0]?.split(":")[1]?.trim();
+  const summary = elements?.[1]?.split(":")[1]?.trim();
+
+  return [score, summary];
 }

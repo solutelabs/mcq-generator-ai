@@ -31,11 +31,10 @@ const Mcq = ({ mcq, setQuestionAnswer }: { mcq: MCQ | null, setQuestionAnswer: R
         console.log(mcq?.answer, selected)
         if (mcq?.answer === selected) {
             setDescription("Correct")
-            setQuestionAnswer("correct")
         } else {
             setDescription("Incorrect")
-            setQuestionAnswer("incorrect")
         }
+        setQuestionAnswer(selected)
     }
 
     return (
