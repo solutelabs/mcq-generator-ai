@@ -8,7 +8,7 @@ const Home = () => {
         <McqIframe />
       </div>
       <div className="w-[50vw] h-screen overflow-y-scroll">
-        <iframe src="https://zerodha-common.s3.ap-south-1.amazonaws.com/Varsity/Modules/Module%201_Introduction%20to%20Stock%20Markets.pdf" className="w-full h-full" />
+        <iframe src="https://demo-text-v1.s3.ap-south-1.amazonaws.com/stock-market.pdf" className="w-full h-full" />
       </div>
     </div>
   )

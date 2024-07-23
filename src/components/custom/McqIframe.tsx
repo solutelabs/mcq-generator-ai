@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, RefreshCcw } from 'lucide-react';
 import { oneMCQ } from '@/lib/utils';
 import SummaryCard from './SummaryCard';
+import CandleChart from './CandleChart';
 
 
 export interface MCQ {
@@ -14,9 +15,10 @@ export interface MCQ {
   answer: string;
   options: string[];
   difficulty: string;
+  type: string;
 }
 
-export const totalQuestions = 4;
+export const totalQuestions = 6;
 
 export default function McqIframe() {
   const { status, messages, submitMessage, threadId, setThreadId, setMessages, append } =
@@ -33,14 +35,21 @@ export default function McqIframe() {
       append({
         id: Date.now().toString(),
         role: 'user',
-        content: `Generate random one mcq related to stock market from provided context.`
+        content: `Generate first chart based mcq`
+      })
+    }
+    else if (messages.length === 2) {
+      append({
+        id: Date.now().toString(),
+        role: 'user',
+        content: `Answer to previous question: ${questionAnswer} and generate random mcq related to stock market from provided context.`
       })
     }
     else if (messages.length < totalQuestions) {
       append({
         id: Date.now().toString(),
         role: 'user',
-        content: `Answer to previous question: ${questionAnswer} and generate next mcq linked to previous questions.`
+        content: `Answer to previous question: ${questionAnswer} and generate next mcq linked to previous questions related to stock market if previous question is not related to open high low close.`
       })
     }
     else {
@@ -52,6 +61,7 @@ export default function McqIframe() {
       setMcqs([]);
     }
     submitMessage();
+    setQuestionAnswer("");
   }
 
   useEffect(() => {
@@ -102,6 +112,12 @@ export default function McqIframe() {
       </div>
 
       {mcqs.map((mcq: MCQ) => {
+        if (mcq.type === "chart") return (
+          <>
+            <CandleChart mcq={mcq} key={mcq.question} />
+            <Mcq mcq={mcq} key={mcq.question} setQuestionAnswer={setQuestionAnswer} />
+          </>
+        )
         return <Mcq mcq={mcq} key={mcq.question} setQuestionAnswer={setQuestionAnswer} />
       })}
 

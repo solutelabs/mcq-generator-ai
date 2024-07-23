@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Badge } from "@/components/ui/badge"
 import { Label } from '@/components/ui/label';
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import { MCQ } from "./McqIframe";
 
@@ -22,7 +22,7 @@ const colors = {
     hard: "bg-red-500 hover:bg-red-600",
 }
 
-const Mcq = ({ mcq, setQuestionAnswer }: { mcq: MCQ | null, setQuestionAnswer: React.Dispatch<React.SetStateAction<string>> }) => {
+const Mcq = ({ mcq, setQuestionAnswer, chart }: { mcq: MCQ | null, setQuestionAnswer: React.Dispatch<React.SetStateAction<string>>, chart?: ReactNode }) => {
 
     const [description, setDescription] = useState<string>("")
     const [selected, setSelected] = useState<string>("")
@@ -57,6 +57,7 @@ const Mcq = ({ mcq, setQuestionAnswer }: { mcq: MCQ | null, setQuestionAnswer: R
                 </CardDescription>
             </CardHeader>
             <CardContent>
+                {chart && chart}
                 <RadioGroup value={selected} onValueChange={setSelected} disabled={description !== ""}>
                     {mcq?.options[0] && <div className="flex items-center space-x-2">
                         <RadioGroupItem value={mcq?.options[0] || "option-one"} id="option-one" />
