@@ -15,20 +15,9 @@ let data = sales.map((d) => ({ ...d, date: new Date(d.date) }));
 
 const Home = () => {
   return (
-    <div className='flex flex-row'>
+    <div className='flex flex-row bg-black'>
       <div className="w-[50vw] h-screen overflow-y-scroll">
         <McqIframe />
-        <div className="grid grid-cols-2 gap-x-4 gap-y-12 p-4">
-          <div className="col-span-2 h-60">
-            <Chart data={data} />
-          </div>
-          <div className="h-40">
-            <Chart data={data} />
-          </div>
-          <div className="h-40">
-            <Chart data={data} />
-          </div>
-        </div>
       </div>
       <div className="w-[50vw] h-screen overflow-y-scroll">
         <iframe src="https://demo-text-v1.s3.ap-south-1.amazonaws.com/stock-market.pdf" className="w-full h-full" />

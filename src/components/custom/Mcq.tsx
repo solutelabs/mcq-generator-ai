@@ -38,7 +38,7 @@ const Mcq = ({ mcq, setQuestionAnswer, chart }: { mcq: MCQ | null, setQuestionAn
     }
 
     return (
-        <Card className="m-10">
+        <Card className="m-10 border-2">
             <CardHeader>
                 <CardTitle className="text-xl font-normal">{mcq?.question}</CardTitle>
                 <CardDescription className={
@@ -55,6 +55,7 @@ const Mcq = ({ mcq, setQuestionAnswer, chart }: { mcq: MCQ | null, setQuestionAn
                     <br />
                     {description && description}
                 </CardDescription>
+
             </CardHeader>
             <CardContent>
                 {chart && chart}

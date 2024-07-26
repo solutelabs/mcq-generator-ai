@@ -1,5 +1,6 @@
 "use client";
 
+import { Card } from '../ui/card';
 import { MCQ } from './McqIframe'
 import Chart from 'react-google-charts';
 
@@ -35,13 +36,16 @@ const CandleChart = ({ mcq }: { mcq: MCQ }) => {
     ];
 
     return (
-        <Chart
-            data={data}
-            options={options}
-            chartType='CandlestickChart'
-            width="100%"
-            height="400px"
-        />
+        <Card className='m-10 mb-0 border-2 bg-gray-700 text-white'>
+            <Chart
+                data={data}
+                options={options}
+                chartType='CandlestickChart'
+                width="100%"
+                height="400px"
+                className='bg-gray-700 text-white border-1'
+            />
+        </Card>
     )
 }
 

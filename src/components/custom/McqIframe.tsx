@@ -20,7 +20,7 @@ export interface MCQ {
 
 export const totalQuestions = 6;
 
-export default function McqIframe() {
+export default function McqIframe() {``
   const { status, messages, submitMessage, threadId, setThreadId, setMessages, append } =
     useAssistant({ api: '/api/get-mcq' });
 
@@ -100,10 +100,10 @@ export default function McqIframe() {
   }, [messages])
 
   return (
-    <div className='text-white overflow-auto'>
+    <div className='text-white  bg-black overflow-auto'>
 
       <div className="h-[6vh] border-b border-b-gray-300 flex justify-end items-center pr-5">
-        <RefreshCcw className='w-5 h-5 cursor-pointer text-black' onClick={() => {
+        <RefreshCcw className='w-5 h-5 cursor-pointer text-white' onClick={() => {
           localStorage.removeItem(`threadId`);
           localStorage.removeItem(`messages`);
           setMessages([]);
@@ -122,8 +122,8 @@ export default function McqIframe() {
       })}
 
       {messages.length <= totalQuestions &&
-        <form onSubmit={onSubmitHandler}>
-          <Button disabled={status !== 'awaiting_message' || (questionAnswer === "" && messages.length > 0)} type='submit' className='m-10'>
+        <form onSubmit={onSubmitHandler} className='flex justify-center items-center'>
+          <Button disabled={status !== 'awaiting_message' || (questionAnswer === "" && messages.length > 0)} type='submit' className='bg-white text-black hover:bg-slate-20 w-[90%] m-10'>
             {status === 'in_progress' && "Generating..."}
             {messages.length === 0 && "Generate MCQ"}
             {mcqs.length > 0 && messages.length < totalQuestions && status === 'awaiting_message' && "Next MCQ"}
@@ -136,7 +136,7 @@ export default function McqIframe() {
       }
       {messages.length > totalQuestions && messages[messages.length - 1]?.role === "user" &&
         <div className="flex justify-center items-center h-[50vh] w-[46vw]">
-          <Loader2 className='w-20 h-20 text-black bg-white animate-spin' />
+          <Loader2 className='w-20 h-20 text-white bg-black animate-spin' />
         </div>
       }
     </div>
