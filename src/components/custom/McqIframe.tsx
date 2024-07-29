@@ -102,7 +102,7 @@ export default function McqIframe() {``
   return (
     <div className='text-white  bg-black overflow-auto'>
 
-      <div className="h-[6vh] border-b border-b-gray-300 flex justify-end items-center pr-5">
+      <div className="h-[6vh] border-b border-b-gray-600 flex justify-end items-center pr-5">
         <RefreshCcw className='w-5 h-5 cursor-pointer text-white' onClick={() => {
           localStorage.removeItem(`threadId`);
           localStorage.removeItem(`messages`);
